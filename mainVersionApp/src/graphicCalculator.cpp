@@ -1,6 +1,7 @@
+#include "graphicCalculator.hpp"
 #include "components/coordianteAxesOxOy/index.cpp"
 #include "components/coordianteGrid/index.cpp"
-#include "exprtk.hpp"
+#include "lib/exprtk.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
@@ -11,7 +12,8 @@ const int lengthWindow = 1400;
 const int widthWindow = 800;
 }  // namespace
 
-auto getFunc() -> double {
+namespace RealizationGraphicCalculator {
+double getFunc() {
     // Объявление переменной для хранения математического выражения
     std::string expression;
 
@@ -45,7 +47,7 @@ auto getFunc() -> double {
     return expr.value();
 }
 
-int main() {
+void StartApp() {
     // Объявление переменной для хранения математического выражения
     std::string expression;
 
@@ -91,7 +93,7 @@ int main() {
         exprtk::parser<double> parser;
         if (!parser.compile(expression, expr)) {
             std::cerr << "Ошибка компиляции: " << parser.error() << std::endl;
-            return 1;
+            return;
         }
 
         // создание точки
@@ -122,22 +124,21 @@ int main() {
             window.draw(point);
         }
 
-        // рисуем сам ось Ox
+        // рисуем ось Ox
         for (const auto& point : OsX) {
             window.draw(point);
         }
 
-        // рисуем сам ось Oy
+        // рисуем ось Oy
         for (const auto& point : OsY) {
             window.draw(point);
         }
 
-        // рисуем сам координатгую сетку
+        // рисуем координатгую сетку
         window.draw(vertLines);
         window.draw(gorizontalLines);
 
         window.display();
     }
-
-    return 0;
 }
+}  // namespace RealizationGraphicCalculator
