@@ -11,6 +11,9 @@
 namespace {
 const int lengthWindow = 1400;
 const int widthWindow = 800;
+
+const int wholeLengthWindow = 6000;
+const int wholeWidthWindow = 5500;
 }  // namespace
 
 namespace RealizationGraphicCalculator {
@@ -64,22 +67,22 @@ void StartApp() {
     std::vector<sf::RectangleShape> graph;
 
     // Создаём горизонтальные линии координатной сетки
-    sf::VertexArray gorizontalLines(sf::Lines, (5600 / scaleY) * 2);
-    CreateCoordinateGrid(gorizontalLines, sf::Color{55, 55, 55, 100}, scaleX, 5600, 6800, 'y');
+    sf::VertexArray gorizontalLines(sf::Lines, (wholeWidthWindow / scaleY) * 2);
+    CreateCoordinateGrid(gorizontalLines, sf::Color{55, 55, 55, 100}, scaleX, wholeWidthWindow, wholeLengthWindow, 'y');
 
     // Создаём вертикальные линии координатной сетки
-    sf::VertexArray vertLines(sf::Lines, (6800 / scaleX) * 2);
-    CreateCoordinateGrid(vertLines, sf::Color{55, 55, 55, 100}, scaleY, 6800, 5600, 'x');
+    sf::VertexArray vertLines(sf::Lines, (wholeLengthWindow / scaleX) * 2);
+    CreateCoordinateGrid(vertLines, sf::Color{55, 55, 55, 100}, scaleY, wholeLengthWindow, wholeWidthWindow, 'x');
 
     // Создаём ось Ox с определёнными праметрами
     std::vector<sf::RectangleShape> OsX;
-    CreateCoordiantesAxes(OsX, 800, scaleX, sf::Color::Black, 2.0f, 'y');
+    CreateCoordiantesAxes(OsX, 800, scaleX, wholeLengthWindow, sf::Color::Black, 2.0f,  'y');
 
     // Создаём ось Oy с определёнными праметрами
     std::vector<sf::RectangleShape> OsY;
-    CreateCoordiantesAxes(OsY, 1400, scaleY, sf::Color::Black, 2.0f, 'x');
+    CreateCoordiantesAxes(OsY, 1400, scaleY, wholeLengthWindow, sf::Color::Black, 2.0f, 'x');
 
-    for (double x = -5000; x < 5000; x += 0.1) {
+    for (double x = -wholeWidthWindow; x < wholeWidthWindow; x += 0.1) {
         double realX = (x - 700) / scaleX;
 
         // Создание символической таблицы
