@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 
 // шаблонная функция для создания осей координат
-void CreateCoordiantesAxes(std::vector<sf::RectangleShape>& axe, int quantityPixels, int scale, int wholeLengthWindow, sf::Color color, float thickness, char constAxe){
+void CreateCoordiantesAxes(std::vector<sf::RectangleShape>& axe, double quantityPixels, int scale, int wholeLengthWindow, sf::Color color, float thickness, char constAxe){
     for (int i = -wholeLengthWindow; i < wholeLengthWindow; i += scale) {
         sf::RectangleShape point;
 
