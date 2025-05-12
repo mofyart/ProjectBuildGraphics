@@ -1,8 +1,7 @@
 #include "graphicCalculator.hpp"
 #include "components/coordianteAxesOxOy/index.cpp"
 #include "components/coordianteGrid/index.cpp"
-#include "components/generationTriangles/index.cpp"
-#include "components/calculateGraphPoints/index.cpp"
+
 #include "components/drawGraphic/index.cpp"
 
 #include "lib/exprtk.hpp"
@@ -12,19 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-namespace {
-const int lengthWindow = 1400;
-const int widthWindow = 800;
 
-const int wholeLengthWindow = 6000;
-const int wholeWidthWindow = 5500;
-
-// Определение масштабов по осям X и Y
-const double scaleX = 50; // Масштаб по оси X
-const double scaleY = 50; // Масштаб по оси Y
-
-
-} // namespace
 
 namespace RealizationGraphicCalculator {
 
@@ -53,17 +40,23 @@ void StartApp() {
     expr.register_symbol_table(symbol_table); // Регистрация символической таблицы
 
     // Создание парсера и компиляция выражения для графика
-    exprtk::parser<double> parser;
-    if (!parser.compile(expression, expr)) {
-        // Вывод ошибки компиляции и закрытие окна в случае неудачи
-        std::cerr << "Ошибка компиляции выражения: " << parser.error() << std::endl;
-        window.close();
-        return; // Выход из функции
+   exprtk::parser<double> parser;
+    if (!expression.empty()) {
+        if (!parser.compile(expression, expr)) {
+            std::cerr << "Ошибка компиляции начального выражения: " << parser.error() << std::endl;
+            // Можно закрыть окно или продолжить с "пустым" графиком
+        }
+    } else {
+        // Если выражение пустое, компилируем "0" для избежания ошибок
+        if (!parser.compile("0", expr)) {
+             std::cerr << "Ошибка компиляции выражения по умолчанию '0': " << parser.error() << std::endl;
+        }
     }
 
     // Вектор для хранения исходных точек графика (в координатах SFML)
+    sf::View view = window.getDefaultView();
     std::vector<sf::Vector2f> graphPoints;
-    CalculateGraphPoints(graphPoints, x_var, scaleX, scaleY, expr, wholeLengthWindow);
+    CalculateGraphPoints(graphPoints, x_var, scaleX, scaleY, expr, view);
 
     // Создание sf::VertexArray для построения толстой линии графика из треугольников
     sf::VertexArray graphVertexArray(sf::Triangles);
@@ -93,7 +86,42 @@ void StartApp() {
     std::vector<sf::RectangleShape> OsY;
     CreateCoordiantesAxes(OsY, 1400.0, scaleY, wholeLengthWindow, sf::Color::Black, 2.0f, 'x');
 
-    DrawApp(window, scaleX, scaleY, gorizontalLines, vertLines, OsX, OsY, graphVertexArray);
+
+    sf::Font font;
+    if (!font.loadFromFile("lib/fonts/ARIAL.TTF")) { // ВАЖНО: Убедитесь, что файл arial.ttf доступен
+        std::cerr << "Критическая ошибка: Не удалось загрузить шрифт arial.ttf!" << std::endl;
+        window.close();
+        return;
+    }
+
+    sf::RectangleShape inputPanelBackground;
+    float panelHeight = 40.0f;
+    float panelWidth = static_cast<float>(lengthWindow) * 0.4f; // 40% ширины окна
+    float panelPadding = 10.0f;
+
+    inputPanelBackground.setSize(sf::Vector2f(panelWidth, panelHeight));
+    inputPanelBackground.setFillColor(sf::Color(220, 220, 220, 200)); // Светло-серый, полупрозрачный
+    inputPanelBackground.setOutlineColor(sf::Color::Black);
+    inputPanelBackground.setOutlineThickness(1.f);
+    inputPanelBackground.setPosition(panelPadding, static_cast<float>(widthWindow) - panelHeight - panelPadding);
+
+    sf::Text inputTextDisplay;
+    inputTextDisplay.setFont(font);
+    inputTextDisplay.setString(expression);
+    inputTextDisplay.setCharacterSize(20); // Размер символов
+    inputTextDisplay.setFillColor(sf::Color::Black);
+    // Позиционирование текста внутри панели с небольшим отступом
+    inputTextDisplay.setPosition(
+        inputPanelBackground.getPosition().x + 5.f,
+        inputPanelBackground.getPosition().y + (panelHeight - inputTextDisplay.getCharacterSize()) / 2.f - 2.f // Небольшая корректировка для вертикали
+    );
+
+
+
+    DrawApp(window, gorizontalLines, vertLines, OsX, OsY, graphVertexArray,
+            expr, symbol_table, parser, x_var, expression, graphPoints,
+            inputPanelBackground, inputTextDisplay, font,
+            scaleX, scaleY, lengthWindow, widthWindow);
 
     std::cout << "Окно закрыто." << std::endl;
 }

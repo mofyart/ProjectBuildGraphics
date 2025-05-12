@@ -1,10 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
-namespace {
-    // Желаемая толщина линии графика в пикселях
-    const float desiredGraphThickness = 2.0f;
-}
+#include "../../lib/constLib.hpp"
+
 
 void CraeteThicknessGraphics(sf::VertexArray& graphVertexArray, const std::vector<sf::Vector2f>& graphPoints) {
      // Генерация треугольников для толстой линии графика

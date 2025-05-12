@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-void CreateCoordinateGrid(sf::VertexArray& nameAxe, sf::Color color, int scale, int quantityPixels, int coordinateSecondPoint, char constCoordinate) {
+void CreateCoordinateGrid(sf::VertexArray& nameAxe, sf::Color color, int scale, int quantityPixels, double coordinateSecondPoint, char constCoordinate) {
     for (int i = 0, pixel = 0; i < (quantityPixels / scale) * 2; i += 2, pixel += scale){
 
         if (constCoordinate == 'x') {
