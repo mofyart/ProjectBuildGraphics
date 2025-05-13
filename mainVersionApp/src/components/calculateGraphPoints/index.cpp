@@ -12,9 +12,6 @@ void CalculateGraphPoints(std::vector<sf::Vector2f>& graphPoints, double& xVar, 
     const double sfmlXEnd = viewCenter.x + viewSize.x / 2.0;
 
     // Шаг по x для вычисления точек графика.
-    // Возможно, стоит сделать этот шаг адаптивным к масштабу/зуму для лучшей производительности/детализации.
-    // Например, sfmlXStep = (viewSize.x / windowWidth) * some_constant;
-    // Уменьшим шаг для лучшей детализации по умолчанию, но вы можете настроить его
     const double sfmlXStep = 0.1;
 
     // Вычисление предполагаемого количества точек
@@ -33,7 +30,6 @@ void CalculateGraphPoints(std::vector<sf::Vector2f>& graphPoints, double& xVar, 
             double currentSfmlX = sfmlXStart + i * sfmlXStep;
 
             // Преобразование SFML x-координаты в математическую x
-            // Центр системы координат (0,0 в мат. пр-ве) находится в (700, 400) в SFML (это offset)
             if (scaleX == 0) {
                  // Обработка случая scaleX=0 зависит от требуемого поведения.
                  // Если это недопустимо, можно пропустить точку или вывести ошибку.
@@ -46,12 +42,11 @@ void CalculateGraphPoints(std::vector<sf::Vector2f>& graphPoints, double& xVar, 
 
             // Преобразование математической y-координаты в SFML y-координату
              if (scaleY == 0) {
-                 // Аналогично scaleX=0.
                  continue;
             }
             double sfmlY = 400.0 - mathY * scaleY;
 
-            // Добавление точки в вектор
+            // Добавление точки в вектор, отвкчающий за построение грфаика
             graphPoints.push_back(sf::Vector2f(static_cast<float>(currentSfmlX), static_cast<float>(sfmlY)));
         }
     }

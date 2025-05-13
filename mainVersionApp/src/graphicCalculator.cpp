@@ -60,7 +60,7 @@ void StartApp() {
 
     // Создание sf::VertexArray для построения толстой линии графика из треугольников
     sf::VertexArray graphVertexArray(sf::Triangles);
-    CraeteThicknessGraphics(graphVertexArray, graphPoints);
+    CreateThicknessGraphics(graphVertexArray, graphPoints);
 
     // Создаём горизонтальные линии координатной сетки
     size_t horizontaLinesCount = 0;
@@ -86,7 +86,7 @@ void StartApp() {
     std::vector<sf::RectangleShape> OsY;
     CreateCoordiantesAxes(OsY, 1400.0, scaleY, wholeLengthWindow, sf::Color::Black, 2.0f, 'x');
 
-
+    // Определяем шрифт строк, вводимой в окно
     sf::Font font;
     if (!font.loadFromFile("lib/fonts/ARIAL.TTF")) { // ВАЖНО: Убедитесь, что файл arial.ttf доступен
         std::cerr << "Критическая ошибка: Не удалось загрузить шрифт arial.ttf!" << std::endl;
@@ -94,15 +94,18 @@ void StartApp() {
         return;
     }
 
+
+    // Создаём окно дополнительное для ввода функции
     sf::RectangleShape inputPanelBackground;
     float panelHeight = 40.0f;
     float panelWidth = static_cast<float>(lengthWindow) * 0.4f; // 40% ширины окна
     float panelPadding = 10.0f;
 
+    //  Устанавливает размер прямоугольника 'inputPanelBackground'.
     inputPanelBackground.setSize(sf::Vector2f(panelWidth, panelHeight));
     inputPanelBackground.setFillColor(sf::Color(220, 220, 220, 200)); // Светло-серый, полупрозрачный
-    inputPanelBackground.setOutlineColor(sf::Color::Black);
-    inputPanelBackground.setOutlineThickness(1.f);
+    inputPanelBackground.setOutlineColor(sf::Color::Black); // / Устанавливаем цвет контура (обводки)
+    inputPanelBackground.setOutlineThickness(1.f); // толщина котура
     inputPanelBackground.setPosition(panelPadding, static_cast<float>(widthWindow) - panelHeight - panelPadding);
 
     sf::Text inputTextDisplay;

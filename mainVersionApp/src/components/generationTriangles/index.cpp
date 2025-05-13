@@ -4,12 +4,12 @@
 #include "../../lib/constLib.hpp"
 
 
-void CraeteThicknessGraphics(sf::VertexArray& graphVertexArray, const std::vector<sf::Vector2f>& graphPoints) {
+void CreateThicknessGraphics(sf::VertexArray& graphVertexArray, const std::vector<sf::Vector2f>& graphPoints) {
      // Генерация треугольников для толстой линии графика
     if (graphPoints.size() >= 2) {
         // Для N точек будет N-1 отрезков. Каждый отрезок - это прямоугольник.
         graphVertexArray.resize((graphPoints.size() - 1) * 6);
-        size_t current_vertex = 0;
+        size_t currentVertex = 0;
 
         // Проходим по всем парам соседних точек
         for (size_t i = 0; i < graphPoints.size() - 1; ++i) {
@@ -18,6 +18,7 @@ void CraeteThicknessGraphics(sf::VertexArray& graphVertexArray, const std::vecto
 
             // Вектор направления отрезка
             sf::Vector2f direction = p2 - p1;
+
             // Длина отрезка
             float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
@@ -40,17 +41,17 @@ void CraeteThicknessGraphics(sf::VertexArray& graphVertexArray, const std::vecto
             sf::Vector2f v4 = p2 - offset; // Третья вершина второго треугольника
 
             // Добавляем вершины первого треугольника (v1, v2, v3)
-            graphVertexArray[current_vertex++] = sf::Vertex(v1, sf::Color::Red); // Цвет графика - зеленый, как в вашем коде
-            graphVertexArray[current_vertex++] = sf::Vertex(v2, sf::Color::Red);
-            graphVertexArray[current_vertex++] = sf::Vertex(v3, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v1, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v2, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v3, sf::Color::Red);
 
             // Добавляем вершины второго треугольника (v3, v2, v4) - для создания прямоугольника
-            graphVertexArray[current_vertex++] = sf::Vertex(v3, sf::Color::Red);
-            graphVertexArray[current_vertex++] = sf::Vertex(v2, sf::Color::Red);
-            graphVertexArray[current_vertex++] = sf::Vertex(v4, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v3, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v2, sf::Color::Red);
+            graphVertexArray[currentVertex++] = sf::Vertex(v4, sf::Color::Red);
         }
 
         // Обрезаем VertexArray, если были пропущенные сегменты
-        graphVertexArray.resize(current_vertex);
+        graphVertexArray.resize(currentVertex);
     }
 }

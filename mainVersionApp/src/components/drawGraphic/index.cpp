@@ -25,13 +25,13 @@ void DrawApp(sf::RenderWindow& window,
     sf::Font& font,
     const double scaleX,
     const double scaleY,
-    const int windowTotalLength, // Этот параметр больше не нужен для CalculateGraphPoints
-    const int windowTotalWidth   // Этот параметр больше не нужен для CalculateGraphPoints
+    const int windowTotalLength,
+    const int windowTotalWidth
     ) {
 
-    sf::Event event; // Объект события SFML
+    sf::Event event; // Объект события SFML. Хранит информацаию о событии
 
-    // Создание и настройка вида (камеры)
+    // Создание и настройка вида камеры
     sf::View view = window.getDefaultView();
 
     float zoomLevel = 1.0f;  // Начальный уровень зума (1.0 - без зума)
@@ -44,7 +44,7 @@ void DrawApp(sf::RenderWindow& window,
     sf::Vector2f movementLimit(1150, 1150); // Максимальное перемещение центра вида от начальной позиции
     sf::Vector2f initialViewCenter = view.getCenter(); // Начальный центр вида
 
-    // Флаг для отслеживания необходимости пересчета графика (после ввода или изменения вида)
+    // Флаг для отслеживания необходимости пересчета графика после ввода или изменения вида
     bool recalculateGraph = true;
 
 
@@ -58,21 +58,21 @@ void DrawApp(sf::RenderWindow& window,
 
             // Обработка ввода текста для панели
             if (event.type == sf::Event::TextEntered) {
-                if (event.text.unicode == '\b') { // Backspace
+                if (event.text.unicode == '\b') {
                     if (!currentExpressionRef.empty()) {
-                        currentExpressionRef.pop_back();
-                        inputText.setString(currentExpressionRef);
+                        currentExpressionRef.pop_back(); // При нажатии на "backspace" удаляем символ из рамки
+                        inputText.setString(currentExpressionRef); // Обновить отображаемый текст
                     }
                 } else if (event.text.unicode == '\r' || event.text.unicode == '\n') {
-                    // Нажатие Enter обрабатывается в KeyPressed ниже
+
                 } else if (event.text.unicode >= 32 && event.text.unicode < 127) {
                     currentExpressionRef += static_cast<char>(event.text.unicode);
                     inputText.setString(currentExpressionRef);
                 }
             }
 
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Enter) {
+            if (event.type == sf::Event::KeyPressed) { // нажатие кнопки
+                if (event.key.code == sf::Keyboard::Enter) { // обработка события нажатия Enter
                     if (!currentExpressionRef.empty()) {
                         if (parserRef.compile(currentExpressionRef, expr)) {
                             inputText.setFillColor(sf::Color::Black); // Сброс цвета при успехе
@@ -117,9 +117,10 @@ void DrawApp(sf::RenderWindow& window,
                 sf::Vector2f oldCenter = view.getCenter();
                 sf::Vector2f oldSize = view.getSize();
                 view.setSize(window.getDefaultView().getSize() / zoomLevel);
+                 // Расчет нового центра вида так, чтобы точка под курсором осталась на месте
                 sf::Vector2f newCenter = mousePosView - (mousePosView - oldCenter) * (view.getSize().x / oldSize.x);
 
-                   // Проверяем ограничения на перемещение центра вида
+                // Проверяем ограничения на перемещение центра вида
                 sf::Vector2f totalDelta = newCenter - initialViewCenter;
                 ControlMovementLimit(totalDelta, movementLimit, newCenter, initialViewCenter);
                 // Проверка и коррекция ограничений вручную
@@ -163,6 +164,8 @@ void DrawApp(sf::RenderWindow& window,
 
                 // Обновляем начальную позицию мыши для следующего шага перетаскивания
                 initialMousePos = currentMousePos;
+
+                recalculateGraph = true; // Установить флаг для пересчета графика после перетаскивания
             }
 
             // Обработка нажатия левой кнопки мыши для начала перетаскивания
@@ -175,26 +178,6 @@ void DrawApp(sf::RenderWindow& window,
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
                 isMouseDragging = false;
             }
-
-            // Обработка движения мыши во время перетаскивания
-            if (isMouseDragging && event.type == sf::Event::MouseMoved) {
-                sf::Vector2i currentMousePos = sf::Mouse::getPosition(window);
-                sf::Vector2f worldDelta = window.mapPixelToCoords(initialMousePos, view) - window.mapPixelToCoords(currentMousePos, view);
-                sf::Vector2f newCenter = view.getCenter() + worldDelta;
-
-                // Проверка и коррекция ограничений вручную
-                sf::Vector2f totalDeltaFromInitial = newCenter - initialViewCenter;
-                 if (std::abs(totalDeltaFromInitial.x) > movementLimit.x) {
-                    newCenter.x = initialViewCenter.x + (totalDeltaFromInitial.x > 0 ? movementLimit.x : -movementLimit.x);
-                }
-                if (std::abs(totalDeltaFromInitial.y) > movementLimit.y) {
-                    newCenter.y = initialViewCenter.y + (totalDeltaFromInitial.y > 0 ? movementLimit.y : -movementLimit.y);
-                }
-
-                view.setCenter(newCenter);
-                initialMousePos = currentMousePos;
-                recalculateGraph = true; // Установить флаг для пересчета графика после перетаскивания
-            }
         } // Конец цикла обработки событий
 
         // Пересчет графика, если установлен флаг (после ввода выражения или изменения вида)
@@ -202,15 +185,15 @@ void DrawApp(sf::RenderWindow& window,
              // Проверяем, что выражение скомпилировано успешно перед пересчетом точек
              if (parserRef.compile(currentExpressionRef.empty() ? "0" : currentExpressionRef, expr)) {
                 graphPointsRef.clear();
-                // ИСПРАВЛЕНИЕ: Передаем текущий вид для расчета точек
+
                 CalculateGraphPoints(graphPointsRef, xVarRef, scaleX, scaleY, expr, view);
                 graphVertexArray.clear(); // Очищаем старые вершины
-                CraeteThicknessGraphics(graphVertexArray, graphPointsRef);
+
+                CreateThicknessGraphics(graphVertexArray, graphPointsRef);
                 inputText.setFillColor(sf::Color::Black); // Сброс цвета текста ввода при успешной компиляции
              } else {
                  // Если компиляция текущего выражения (или "0") неуспешна,
                  // то при изменении вида график все равно очищается или остается пустым.
-                 // Цвет текста ввода уже должен быть красным из обработчика Enter.
                  graphVertexArray.clear();
                  graphPointsRef.clear();
              }
@@ -218,12 +201,12 @@ void DrawApp(sf::RenderWindow& window,
         }
 
 
-        window.setView(view); // Применяем вид (камеру) ко всему окну перед отрисовкой сцены
+        window.setView(view); // Применяем вид ко всему окну перед отрисовкой мира
 
         // Очистка окна белым цветом
         window.clear(sf::Color::White);
 
-        // Рисуем координатную сетку (сначала горизонтальные, потом вертикальные)
+        // Рисуем координатную сетку
         if (scaleY != 0 && gorizontalLines.getVertexCount() > 0) window.draw(gorizontalLines);
         if (scaleX != 0 && vertLines.getVertexCount() > 0) window.draw(vertLines);
 
@@ -235,19 +218,19 @@ void DrawApp(sf::RenderWindow& window,
             window.draw(point);
         }
 
-        // Рисуем сам график (толстой линией)
+        // Рисуем сам график
         if (graphVertexArray.getVertexCount() > 0) {
             window.draw(graphVertexArray);
         }
 
-        // Рисуем элементы интерфейса в экранных координатах (независимо от вида графика)
+        // Рисуем элементы интерфейса в экранных координатах
         sf::View currentGraphView = window.getView(); // Сохраняем текущий вид графика
-        window.setView(window.getDefaultView()); // Устанавливаем вид по умолчанию (экранные координаты)
+        window.setView(window.getDefaultView()); // Устанавливаем вид по умолчанию
 
         window.draw(inputPanel); // Рисуем фон панели
         window.draw(inputText); // Рисуем текст ввода
 
-        window.setView(currentGraphView); // Восстанавливаем вид графика (для следующего кадра и логики)
+        window.setView(currentGraphView); // Восстанавливаем вид графика
 
         // Отображение всего нарисованного на окне
         window.display();

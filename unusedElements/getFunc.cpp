@@ -43,3 +43,25 @@
 //     // Возвращаем вычисленное значение
 //     return result;
 // }
+
+
+
+//   // // Обработка движения мыши во время перетаскивания
+            // if (isMouseDragging && event.type == sf::Event::MouseMoved) {
+            //     sf::Vector2i currentMousePos = sf::Mouse::getPosition(window);
+            //     sf::Vector2f worldDelta = window.mapPixelToCoords(initialMousePos, view) - window.mapPixelToCoords(currentMousePos, view);
+            //     sf::Vector2f newCenter = view.getCenter() + worldDelta;
+
+            //     // Проверка и коррекция ограничений вручную
+            //     sf::Vector2f totalDeltaFromInitial = newCenter - initialViewCenter;
+            //      if (std::abs(totalDeltaFromInitial.x) > movementLimit.x) {
+            //         newCenter.x = initialViewCenter.x + (totalDeltaFromInitial.x > 0 ? movementLimit.x : -movementLimit.x);
+            //     }
+            //     if (std::abs(totalDeltaFromInitial.y) > movementLimit.y) {
+            //         newCenter.y = initialViewCenter.y + (totalDeltaFromInitial.y > 0 ? movementLimit.y : -movementLimit.y);
+            //     }
+
+            //     view.setCenter(newCenter);
+            //     initialMousePos = currentMousePos;
+
+            // }
