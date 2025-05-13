@@ -88,8 +88,8 @@ void StartApp() {
 
     // Определяем шрифт строк, вводимой в окно
     sf::Font font;
-    if (!font.loadFromFile("lib/fonts/ARIAL.TTF")) { // ВАЖНО: Убедитесь, что файл arial.ttf доступен
-        std::cerr << "Критическая ошибка: Не удалось загрузить шрифт arial.ttf!" << std::endl;
+    if (!font.loadFromFile("lib/fonts/ARIAL.TTF")) { // Убедимся, что файл arial.ttf доступен
+        std::cerr << "Не удалось загрузить шрифт arial.ttf!" << std::endl;
         window.close();
         return;
     }
